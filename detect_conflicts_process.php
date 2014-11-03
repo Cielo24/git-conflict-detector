@@ -146,7 +146,7 @@ function load_and_validate_settings()
 	$global_settings = parse_ini_file("settings.ini", TRUE);
 	$hipchat_room_id = $global_settings['hipchat']['room_id'];
 	$hipchat_token = $global_settings['hipchat']['token'];
-	$hipchat_name = $global_settings['hipchat']['name`'];
+	$hipchat_name = $global_settings['hipchat']['name'];
 	if (array_key_exists('git', $global_settings))
 	{
 		$ignore_branches = $global_settings['git']['ignore_branches'];
@@ -159,8 +159,8 @@ function main()
 
 	$file_list = scandir($GLOBALS['queue_directory']);
 	foreach ($file_list as $file) {
-		$file_name = $queue_directory."/".$file;
-		if (is_dir($file_name)
+		$file_name = $GLOBALS['queue_directory']."/".$file;
+		if (is_dir($file_name))
 		{
 			continue;
 		} else {

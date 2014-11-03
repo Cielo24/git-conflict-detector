@@ -25,8 +25,7 @@ catch (Exception $e)
 
 // Write raw JSON payload to a file to be processed async by detect_conflicts_process.php
 $queue_filename = ".queue/".$payload->before."-".$payload->after;
-file_put_contents(queue_filename, $_REQUEST['payload']);
+file_put_contents($queue_filename, $_REQUEST['payload']);
 
 // respond with success
-echo("Request queued")
-
+echo("Request queued");
