@@ -20,6 +20,7 @@ $queue_directory = '.queue';
 $cache_directory = '.cache';
 $log_directory = '.logs';
 $log_file=$log_directory.'/git.log';
+$maximum_branches_to_check=1000;
 
 
 function process_file($file_name)
@@ -75,8 +76,15 @@ function process_file($file_name)
 	}
 
 	$failures = [];
+	$branches_checked=0;
 	foreach ($branches as $branch)
 	{
+		if ($branches_checked > $GLOBALS['maximum_branches_to_check'])
+		{
+			break;
+		}
+		$branches_checked = $branches_checked + 1;
+
 		// Pull out remote name from branch ref
 		$branch_parts = explode('/', $branch);
 		$remote_name  = array_shift($branch_parts);
@@ -147,12 +155,13 @@ function process_file($file_name)
 function load_and_validate_settings()
 {
 	$global_settings = parse_ini_file("settings.ini", TRUE);
-	$hipchat_room_id = $global_settings['hipchat']['room_id'];
-	$hipchat_token = $global_settings['hipchat']['token'];
-	$hipchat_name = $global_settings['hipchat']['name'];
+	$GLOBALS['hipchat_room_id'] = $global_settings['hipchat']['room_id'];
+	$GLOBALS['hipchat_token'] = $global_settings['hipchat']['token'];
+	$GLOBALS['hipchat_name'] = $global_settings['hipchat']['name'];
 	if (array_key_exists('git', $global_settings))
 	{
 		$ignore_branches = $global_settings['git']['ignore_branches'];
+		$maximum_branches_to_check = $global_settings['git']['maximum_branches_to_check'];
 	}
 }
 
