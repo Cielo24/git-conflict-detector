@@ -15,7 +15,7 @@ include 'src/Hipchat.php';
 $hipchat_room_id = '';
 $hipchat_token = '';
 $hipchat_name = '';
-$ignore_branches = [];
+$ignore_branches = '';
 $queue_directory = '.queue';
 $cache_directory = '.cache';
 $log_directory = '.logs';
@@ -69,7 +69,7 @@ function process_file($file_name)
 
 	// Should we ignore certain branches?
 	$ignore = array();
-	if (isset($GLOBALS['ignore_branches']))
+	if (array_key_exists('ignore_branches', $GLOBALS))
 	{
 		$ignore = explode(',', $GLOBALS['ignore_branches']);
 	}
