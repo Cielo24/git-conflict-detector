@@ -154,14 +154,14 @@ function process_file($file_name)
 
 function load_and_validate_settings()
 {
-	$global_settings = parse_ini_file("settings.ini", TRUE);
-	$GLOBALS['hipchat_room_id'] = $global_settings['hipchat']['room_id'];
-	$GLOBALS['hipchat_token'] = $global_settings['hipchat']['token'];
-	$GLOBALS['hipchat_name'] = $global_settings['hipchat']['name'];
-	if (array_key_exists('git', $global_settings))
+	$settings = parse_ini_file("settings.ini", TRUE);
+	$GLOBALS['hipchat_room_id'] = $settings['hipchat']['room_id'];
+	$GLOBALS['hipchat_token'] = $settings['hipchat']['token'];
+	$GLOBALS['hipchat_name'] = $settings['hipchat']['name'];
+	if (array_key_exists('git', $settings))
 	{
-		$ignore_branches = $global_settings['git']['ignore_branches'];
-		$maximum_branches_to_check = $global_settings['git']['maximum_branches_to_check'];
+		$GLOBALS['ignore_branches'] = $settings['git']['ignore_branches'];
+		$GLOBALS['maximum_branches_to_check'] = $settings['git']['maximum_branches_to_check'];
 	}
 }
 
