@@ -16,10 +16,10 @@ $hipchat_room_id = '';
 $hipchat_token = '';
 $hipchat_name = '';
 $ignore_branches = [];
-$queue_directory = '.queue'
-$cache_directory = '.cache'
-$log_directory = '.logs'
-$log_file=$log_directory.'/git.log'
+$queue_directory = '.queue';
+$cache_directory = '.cache';
+$log_directory = '.logs';
+$log_file=$log_directory.'/git.log';
 
 
 function process_file($file_name)
@@ -149,7 +149,7 @@ function load_and_validate_settings()
 	$hipchat_name = $global_settings['hipchat']['name`'];
 	if (array_key_exists('git', $global_settings))
 	{
-		$ignore_branches = $global_settings['git']['ignore_branches']
+		$ignore_branches = $global_settings['git']['ignore_branches'];
 	}
 }
 
@@ -157,14 +157,14 @@ function main()
 {
 	load_and_validate_settings();
 
-	$file_list = scandir($GLOBALS['queue_directory'])
+	$file_list = scandir($GLOBALS['queue_directory']);
 	foreach ($file_list as $file) {
 		$file_name = $queue_directory."/".$file
 		if (is_dir($file_name)
 		{
 			continue;
 		} else {
-			process_file($file_name)
+			process_file($file_name);
 		}
 
 	}
