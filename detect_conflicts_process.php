@@ -146,7 +146,7 @@ function process_file($file_name)
 		$commits = implode(', ', $commit_msgs);
 		$commits = strlen($commits) > 30 ? substr($commits, 0, 29).'...' : $commits;
 
-		$msg = '<strong>'.$pusher.'</strong> - Your latest pushes `<strong>'.$commits.'</strong>` is conflicting with the following branches: <strong>'.implode(', ', $failures).'</strong>';
+		$msg = '<strong>'.$pusher.'</strong> - Branch '.$subject_branch.' is conflicting with the following branches: <strong>'.implode(', ', $failures).'</strong>';
 
 		$chat->message_room($GLOBALS['hipchat_room_id'], $GLOBALS['hipchat_name'], $msg, TRUE, Hipchat::COLOR_RED);
 	}
