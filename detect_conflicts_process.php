@@ -170,6 +170,6 @@ function main()
 	}
 }
 
-
+main();
 // The end.
 
