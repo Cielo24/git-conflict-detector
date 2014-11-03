@@ -159,7 +159,7 @@ function main()
 
 	$file_list = scandir($GLOBALS['queue_directory']);
 	foreach ($file_list as $file) {
-		$file_name = $queue_directory."/".$file
+		$file_name = $queue_directory."/".$file;
 		if (is_dir($file_name)
 		{
 			continue;
