@@ -19,9 +19,9 @@ $ignore_branches = '';
 $queue_directory = '.queue';
 $cache_directory = '.cache';
 $log_directory = '.logs';
-$log_file=$log_directory.'/git.log';
-$maximum_branches_to_check=1000;
-
+$log_file = $log_directory.'/git.log';
+$maximum_branches_to_check = 1000;
+$git_to_hipchat_name = array();
 
 function process_file($file_name)
 {
@@ -146,9 +146,18 @@ function process_file($file_name)
 		$commits = implode(', ', $commit_msgs);
 		$commits = strlen($commits) > 30 ? substr($commits, 0, 29).'...' : $commits;
 
-		$msg = '<strong>'.$pusher.'</strong> - Branch '.$subject_branch.' is conflicting with the following branches: <strong>'.implode(', ', $failures).'</strong>';
+		$hipchat_mention = '@all';
+		if (array_key_exists(git_to_hipchat_name,$GLOBALS))
+		{
+			if (array_key_exists($pusher,$GLOBALS['git_to_hipchat_name']))
+			{
+				$hipchat_mention = "@".$GLOBALS['git_to_hipchat_name'][$pusher];
+			}
+		}
 
-		$chat->message_room($GLOBALS['hipchat_room_id'], $GLOBALS['hipchat_name'], $msg, TRUE, Hipchat::COLOR_RED);
+		$msg = $hipchat_mention.'Branch "'.$subject_branch.'" is conflicting with the following branches: "'.implode(', ', $failures).'"';
+
+		$chat->message_room($GLOBALS['hipchat_room_id'], $GLOBALS['hipchat_name'], $msg, TRUE, Hipchat::COLOR_RED, Hipchat::FORMAT_TEXT);
 	}
 }
 
@@ -162,6 +171,10 @@ function load_and_validate_settings()
 	{
 		$GLOBALS['ignore_branches'] = $settings['git']['ignore_branches'];
 		$GLOBALS['maximum_branches_to_check'] = $settings['git']['maximum_branches_to_check'];
+	}
+	if (array_key_exists('git_to_hipchat_name', $settings))
+	{
+		$GLOBALS['git_to_hipchat_name'] = $settings['git_to_hipchat_name'];
 	}
 }
 
