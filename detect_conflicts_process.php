@@ -103,6 +103,9 @@ function process_file($file_name)
 		{
 		}
 
+		file_put_contents($GLOBALS['log_file'], "Cmd: git clean -f -d\n", FILE_APPEND);
+		$git->execute("clean -f -d");
+
 		file_put_contents($GLOBALS['log_file'], "Cmd: git checkout -b $branch $remote_name/$branch\n", FILE_APPEND);
 		$git->execute("checkout -b $branch $remote_name/$branch");
 
