@@ -147,7 +147,7 @@ function process_file($file_name)
 		$commits = strlen($commits) > 30 ? substr($commits, 0, 29).'...' : $commits;
 
 		$hipchat_mention = '@all';
-		if (array_key_exists(git_to_hipchat_name,$GLOBALS))
+		if (array_key_exists('git_to_hipchat_name',$GLOBALS))
 		{
 			if (array_key_exists($pusher,$GLOBALS['git_to_hipchat_name']))
 			{
@@ -155,7 +155,7 @@ function process_file($file_name)
 			}
 		}
 
-		$msg = $hipchat_mention.'Branch "'.$subject_branch.'" is conflicting with the following branches: "'.implode(', ', $failures).'"';
+		$msg = $hipchat_mention.' Branch "'.$subject_branch.'" is conflicting with the following branches: "'.implode(', ', $failures).'"';
 
 		$chat->message_room($GLOBALS['hipchat_room_id'], $GLOBALS['hipchat_name'], $msg, TRUE, Hipchat::COLOR_RED, Hipchat::FORMAT_TEXT);
 	}
