@@ -77,6 +77,13 @@ function process_file($file_name)
 		$ignore = explode(',', $GLOBALS['ignore_branches']);
 	}
 
+	// Clean current branch, just in case we died while in progress
+	log_message('reset --hard origin/develop'."\n");
+	$git->execute('reset --hard origin/develop');
+
+	log_message("Cmd: git clean -f -d\n");
+	$git->execute("clean -f -d");
+
 	$failures = [];
 	$branches_checked=0;
 	foreach ($branches as $branch)
