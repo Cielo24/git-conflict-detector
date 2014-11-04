@@ -84,6 +84,9 @@ function process_file($file_name)
 	log_message("Cmd: git clean -f -d\n");
 	$git->execute("clean -f -d");
 
+	log_message("Cmd: git checkout -b master origin/master\n");
+	$git->execute("checkout -b master origin/master");
+
 	$failures = [];
 	$branches_checked=0;
 	foreach ($branches as $branch)
