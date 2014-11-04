@@ -35,6 +35,13 @@ function process_file($file_name)
 	// parse JSON
 	$payload = json_decode(file_get_contents($file_name));
 
+	// Do not process deletions
+	if ($payload->deleted)
+	{
+		log_message("Ignoring deletion commit\n");
+		return;
+	}
+
 	// INIT
 	$repo_url = 'git@github.com:'.$payload->repository->owner->name.'/'.$payload->repository->name.'.git';
 	$repo_dir = $GLOBALS['cache_directory'].'/'.$payload->repository->name;
@@ -47,9 +54,6 @@ function process_file($file_name)
 	array_shift($branch_parts);
 	array_shift($branch_parts);
 	$subject_branch = implode('/', $branch_parts);
-
-	// Do not process deletions
-	if ($payload->deleted) die();
 
 	// SETUP
 	if ( ! is_dir($repo_dir))
