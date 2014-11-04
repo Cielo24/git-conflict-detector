@@ -27,15 +27,7 @@ function process_file($file_name)
 {
 
 	// parse JSON
-	try {
-		$payload = json_decode(file_get_contents($file_name));
-	}
-	catch (Exception $e)
-	{
-		// delete the file so we don't process it again
-		unlink($file_name);
-		die('Invalid request payload in file '.$file_name);
-	}
+	$payload = json_decode(file_get_contents($file_name));
 
 	// INIT
 	$repo_url = 'git@github.com:'.$payload->repository->owner->name.'/'.$payload->repository->name.'.git';
@@ -189,7 +181,15 @@ function main()
 		{
 			continue;
 		} else {
-			process_file($file_name);
+			try {
+				process_file($file_name);
+			}
+			catch (Exception $e)
+			{
+				file_put_contents($GLOBALS['log_file'], 'Failed to process $file_name, error: $e', FILE_APPEND);
+			}
+			// delete the file so we don't process it again
+			unlink($file_name);
 		}
 
 	}
