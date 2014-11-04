@@ -192,7 +192,7 @@ function main()
 			}
 			catch (Exception $e)
 			{
-				log_message('Failed to process $file_name, error: $e');
+				log_message('Failed to process '.$file_name.', error: '.$e);
 			}
 			// delete the file so we don't process it again
 			unlink($file_name);
