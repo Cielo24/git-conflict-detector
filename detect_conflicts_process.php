@@ -78,8 +78,8 @@ function process_file($file_name)
 	}
 
 	// Clean current branch, just in case we died while in progress
-	log_message('reset --hard origin/develop'."\n");
-	$git->execute('reset --hard origin/develop');
+	log_message('Cmd: git reset --hard origin'."\n");
+	$git->execute('reset --hard origin');
 
 	log_message("Cmd: git clean -f -d\n");
 	$git->execute("clean -f -d");
@@ -106,7 +106,11 @@ function process_file($file_name)
 		if ($branch == $subject_branch) continue;
 
 		// Skip blacklisted branches
-		if (in_array($branch, $ignore)) continue;
+		if (in_array($branch, $ignore))
+		{
+			log_message("\nSkipping $branch it is in ignore list\n");
+			continue;
+		}
 		
 		log_message("\nBRANCH: $branch REMOTE: $remote_name/$branch\n");
 
@@ -136,7 +140,7 @@ function process_file($file_name)
 			$failures[] = $branch;
 		}
 
-		log_message('reset --hard origin/develop'."\n");
+		log_message('Cmd: git reset --hard origin/develop'."\n");
 		$git->execute('reset --hard origin/develop');
 	}
 
