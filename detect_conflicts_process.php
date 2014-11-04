@@ -23,6 +23,12 @@ $log_file = $log_directory.'/git.log';
 $maximum_branches_to_check = 1000;
 $git_to_hipchat_name = array();
 
+function log_message($message)
+{
+	print($message);
+	file_put_contents($GLOBALS['log_file'], $message, FILE_APPEND);
+}
+
 function process_file($file_name)
 {
 
