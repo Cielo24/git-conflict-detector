@@ -31,8 +31,8 @@ function log_message($message)
 
 function call_git($git, $command)
 {
-	log_message("Cmd: git ".$command);
-	$git->execute($command);
+	log_message("Cmd: git ".$command."\n");
+	return $git->execute($command);
 }
 
 function process_file($file_name)
@@ -78,7 +78,7 @@ function process_file($file_name)
 		call_git($git, 'branch -D `git branch | grep -v \* | xargs`');
 
 		// remove branches that no longer exist on origin and update all branches that do
-		call_git($git, "fetch --prune --all\n");
+		call_git($git, "fetch --prune --all");
 	}
 
 	// Detect remote branches
