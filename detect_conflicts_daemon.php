@@ -131,7 +131,7 @@ function process_file($file_name)
 		}
 		catch (Exception $e)
 		{
-			log_message("BRANCH: $branch conflicts with $subject_branch\n");
+			log_message("WARNING: $branch conflicts with $subject_branch\n");
 			$failures[] = $branch;
 		}
 
