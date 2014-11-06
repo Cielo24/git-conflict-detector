@@ -29,6 +29,12 @@ function log_message($message)
 	file_put_contents($GLOBALS['log_file'], $message, FILE_APPEND);
 }
 
+function call_git($git, $command)
+{
+	log_message("Cmd: git ".$command);
+	$git->execute($command);
+}
+
 function process_file($file_name)
 {
 
@@ -58,15 +64,25 @@ function process_file($file_name)
 	// SETUP
 	if ( ! is_dir($repo_dir))
 	{
-		log_message("Cmd: git clone $repo_url $repo_dir\n");
-		$git->execute("clone $repo_url ".escapeshellcmd($repo_dir));
+		call_git("clone $repo_url ".escapeshellcmd($repo_dir));
 	} else {
-		log_message("Cmd: git fetch --prune\n");
-		$git->execute('fetch --prune');
+
+		// cleanup any changes that might have been left over if we crashed while running
+		call_git('reset --hard origin');
+		call_git("clean -f -d");
+
+		// move to the master branch
+		call_git("checkout master");
+
+		// remove all local branches
+		call_git('branch -D `git branch | grep -v \* | xargs`');
+
+		// remove branches that no longer exist on origin and update all branches that do
+		call_git("fetch --prune --all\n");
 	}
 
 	// Detect remote branches
-	$branches = $git->execute('for-each-ref refs/remotes/ --format=\'%(refname:short)\'');
+	$branches = call_git('for-each-ref refs/remotes/ --format=\'%(refname:short)\'');
 	$branches = explode("\n", $branches);
 	log_message("\nBranches:".implode(', ', $branches)."\n");
 
@@ -76,16 +92,6 @@ function process_file($file_name)
 	{
 		$ignore = explode(',', $GLOBALS['ignore_branches']);
 	}
-
-	// Clean current branch, just in case we died while in progress
-	log_message('Cmd: git reset --hard origin'."\n");
-	$git->execute('reset --hard origin');
-
-	log_message("Cmd: git clean -f -d\n");
-	$git->execute("clean -f -d");
-
-	log_message("Cmd: git checkout master\n");
-	$git->execute("checkout master");
 
 	$failures = [];
 	$branches_checked=0;
@@ -117,34 +123,18 @@ function process_file($file_name)
 		
 		log_message("\nBRANCH: $branch REMOTE: $remote_name/$branch\n");
 
-		try
-		{
-			// Clean previous local branch if exists
-			log_message("Cmd: git branch -D $branch\n");
-			$git->execute("branch -D $branch");
-		}
-		catch (Exception $e)
-		{
-		}
-
-		log_message("Cmd: git clean -f -d\n");
-		$git->execute("clean -f -d");
-
-		log_message("Cmd: git checkout -b $branch $remote_name/$branch\n");
-		$git->execute("checkout -b $branch $remote_name/$branch");
+		call_git("checkout $remote_name/$branch");
 
 		try
 		{
-			log_message('Cmd: git pull origin '.escapeshellcmd($subject_branch)."\n");
-			$status = $git->execute('pull origin '.escapeshellcmd($subject_branch));
+			$status = call_git('pull '.escapeshellcmd($subject_branch));
 		}
 		catch (Exception $e)
 		{
 			$failures[] = $branch;
 		}
 
-		log_message('Cmd: git reset --hard origin/develop'."\n");
-		$git->execute('reset --hard origin/develop');
+		call_git('reset --hard origin/'.escapeshellcmd($subject_branch));
 	}
 
 	if ($failures)
@@ -213,9 +203,9 @@ function main()
 				log_message('Failed to process '.$file_name.', error: '.$e->getMessage());
 			}
 			// delete the file so we don't process it again
-			unlink($file_name);
+			//unlink($file_name);
 		}
-
+		break;
 	}
 }
 
