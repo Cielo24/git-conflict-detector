@@ -64,25 +64,25 @@ function process_file($file_name)
 	// SETUP
 	if ( ! is_dir($repo_dir))
 	{
-		call_git("clone $repo_url ".escapeshellcmd($repo_dir));
+		call_git($git, "clone $repo_url ".escapeshellcmd($repo_dir));
 	} else {
 
 		// cleanup any changes that might have been left over if we crashed while running
-		call_git('reset --hard origin');
-		call_git("clean -f -d");
+		call_git($git, 'reset --hard origin');
+		call_git($git, "clean -f -d");
 
 		// move to the master branch
-		call_git("checkout master");
+		call_git($git, "checkout master");
 
 		// remove all local branches
-		call_git('branch -D `git branch | grep -v \* | xargs`');
+		call_git($git, 'branch -D `git branch | grep -v \* | xargs`');
 
 		// remove branches that no longer exist on origin and update all branches that do
-		call_git("fetch --prune --all\n");
+		call_git($git, "fetch --prune --all\n");
 	}
 
 	// Detect remote branches
-	$branches = call_git('for-each-ref refs/remotes/ --format=\'%(refname:short)\'');
+	$branches = call_git($git, 'for-each-ref refs/remotes/ --format=\'%(refname:short)\'');
 	$branches = explode("\n", $branches);
 	log_message("\nBranches:".implode(', ', $branches)."\n");
 
@@ -123,18 +123,18 @@ function process_file($file_name)
 		
 		log_message("\nBRANCH: $branch REMOTE: $remote_name/$branch\n");
 
-		call_git("checkout $remote_name/$branch");
+		call_git($git, "checkout $remote_name/$branch");
 
 		try
 		{
-			$status = call_git('pull '.escapeshellcmd($subject_branch));
+			$status = call_git($git, 'pull '.escapeshellcmd($subject_branch));
 		}
 		catch (Exception $e)
 		{
 			$failures[] = $branch;
 		}
 
-		call_git('reset --hard origin/'.escapeshellcmd($subject_branch));
+		call_git($git, 'reset --hard origin/'.escapeshellcmd($subject_branch));
 	}
 
 	if ($failures)
