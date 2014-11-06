@@ -131,6 +131,7 @@ function process_file($file_name)
 		}
 		catch (Exception $e)
 		{
+			log_message("\nBRANCH: $branch conflicts with $subject_branch\n");
 			$failures[] = $branch;
 		}
 
@@ -162,7 +163,7 @@ function process_file($file_name)
 		}
 
 		$msg = $hipchat_mention.' Branch "'.$subject_branch.'" is conflicting with the following branches: "'.implode(', ', $failures).'"';
-
+		log_message($msg."\n");
 		$chat->message_room($GLOBALS['hipchat_room_id'], $GLOBALS['hipchat_name'], $msg, TRUE, Hipchat::COLOR_RED, Hipchat::FORMAT_TEXT);
 	}
 }
