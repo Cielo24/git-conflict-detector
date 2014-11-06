@@ -127,11 +127,11 @@ function process_file($file_name)
 
 		try
 		{
-			$status = call_git($git, 'pull '.escapeshellcmd($subject_branch));
+			$status = call_git($git, 'pull origin '.escapeshellcmd($subject_branch));
 		}
 		catch (Exception $e)
 		{
-			log_message("\nBRANCH: $branch conflicts with $subject_branch\n");
+			log_message("BRANCH: $branch conflicts with $subject_branch\n");
 			$failures[] = $branch;
 		}
 
