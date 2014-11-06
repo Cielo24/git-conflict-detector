@@ -204,9 +204,8 @@ function main()
 				log_message('Failed to process '.$file_name.', error: '.$e->getMessage());
 			}
 			// delete the file so we don't process it again
-			//unlink($file_name);
+			unlink($file_name);
 		}
-		break;
 	}
 }
 
