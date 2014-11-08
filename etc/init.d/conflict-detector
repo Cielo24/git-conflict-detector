@@ -17,10 +17,11 @@ DESC="Git Conflict Detector"
 PIDFILE="/var/run/${NAME}.pid"
 LOGFILE="/var/log/${NAME}.log"
  
-DAEMON="/var/www/conflict_detector_daemon.php"
-DAEMON_OPTS=""
+DAEMON="/bin/bash"
+DAEMON_OPTS="-c \"exec /var/www/detect_conflicts_daemon.php\""
+DAEMON_WORKING_DIR="/var/www"
  
-START_OPTS="--start --background --make-pidfile --pidfile ${PIDFILE} --startas ${DAEMON} -- ${DAEMON_OPTS}"
+START_OPTS="--start --background --make-pidfile --pidfile ${PIDFILE} --chroot ${DAEMON_WORKING_DIR} --startas ${DAEMON} -- ${DAEMON_OPTS}"
 STOP_OPTS="--stop --pidfile ${PIDFILE}"
  
 test -x $DAEMON || exit 0
