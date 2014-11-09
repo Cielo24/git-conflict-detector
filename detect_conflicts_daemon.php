@@ -202,7 +202,7 @@ function load_and_validate_settings()
 
 function main()
 {
-	log_message('Starting up\n');
+	log_message("Starting up\n");
 	load_and_validate_settings();
 
 	while(TRUE)
@@ -219,13 +219,13 @@ function main()
 				}
 				catch (Exception $e)
 				{
-					log_message('Failed to process '.$file_name.', error: '.$e->getMessage().'\n');
+					log_message('Failed to process '.$file_name.', error: '.$e->getMessage()."\n");
 				}
 				// delete the file so we don't process it again
 				unlink($file_name);
 			}
 		}
-		log_message('Sleeping...\n');
+		log_message("Sleeping...\n");
 		sleep(15);
 	}
 }
