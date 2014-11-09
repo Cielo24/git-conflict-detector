@@ -98,7 +98,8 @@ function process_file($file_name)
 	$branches_checked=0;
 	foreach ($branches as $branch)
 	{
-		if ($branches_checked > $GLOBALS['maximum_branches_to_check'])
+		if ($GLOBALS['maximum_branches_to_check'] > 0 &&
+			$branches_checked > $GLOBALS['maximum_branches_to_check'])
 		{
 			break;
 		}
@@ -177,36 +178,55 @@ function load_and_validate_settings()
 	$GLOBALS['hipchat_name'] = $settings['hipchat']['name'];
 	if (array_key_exists('git', $settings))
 	{
-		$GLOBALS['ignore_branches'] = $settings['git']['ignore_branches'];
-		$GLOBALS['maximum_branches_to_check'] = $settings['git']['maximum_branches_to_check'];
+		if (array_key_exists('ignore_branches', $settings['git']))
+		{
+			$GLOBALS['ignore_branches'] = $settings['git']['ignore_branches'];
+		} else {
+			$GLOBALS['ignore_branches'] = "";
+		}
+		
+		if (array_key_exists('maximum_branches_to_check', $settings['git']))
+		{
+			$GLOBALS['maximum_branches_to_check'] = $settings['git']['maximum_branches_to_check'];
+		} else {
+			$GLOBALS['maximum_branches_to_check'] = 0;
+		}
 	}
 	if (array_key_exists('git_to_hipchat_name', $settings))
 	{
 		$GLOBALS['git_to_hipchat_name'] = $settings['git_to_hipchat_name'];
+	} else {
+		$GLOBALS['git_to_hipchat_name'] = [];
 	}
 }
 
 function main()
 {
+	log_message('Starting up\n');
 	load_and_validate_settings();
 
-	$file_list = scandir($GLOBALS['queue_directory']);
-	foreach ($file_list as $file) {
-		$file_name = $GLOBALS['queue_directory']."/".$file;
-		if (is_dir($file_name))
-		{
-			continue;
-		} else {
-			try {
-				process_file($file_name);
-			}
-			catch (Exception $e)
+	while(TRUE)
+	{
+		$file_list = scandir($GLOBALS['queue_directory']);
+		foreach ($file_list as $file) {
+			$file_name = $GLOBALS['queue_directory']."/".$file;
+			if (is_dir($file_name))
 			{
-				log_message('Failed to process '.$file_name.', error: '.$e->getMessage());
+				continue;
+			} else {
+				try {
+					process_file($file_name);
+				}
+				catch (Exception $e)
+				{
+					log_message('Failed to process '.$file_name.', error: '.$e->getMessage().'\n');
+				}
+				// delete the file so we don't process it again
+				unlink($file_name);
 			}
-			// delete the file so we don't process it again
-			unlink($file_name);
 		}
+		log_message('Sleeping...\n');
+		sleep(15);
 	}
 }
 
