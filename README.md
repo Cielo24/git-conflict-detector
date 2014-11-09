@@ -1,33 +1,57 @@
 # Auto-conflict detector
 ----
-> (c) 2013 Sortex Ltd., sortex.co.il
-> github.com/sortex/git-conflict-detector
+> (c) 2014 cielo24 Inc., cielo24.com
+> github.com/cielo24/git-conflict-detector
 
 Runs as a webpage that listens to GitHub hook requests and alerts an HipChat room if a conflict has detected with other branches in the repository.
 
 ## Setup
 
-  - Setup a webserver vhost
+  - Setup a PHP webserver vhost
   - Clone files into vhost root dir
   - Generate an SSH key pair in the webserver's user dir, eg. /var/www/.ssh (See section below)
-  - Add the public key you generated into the repository's GitHub "Deploy Keys"
-  - Make sure `.logs` and `.cache` dirs have write permission for webserver's user
-  - Edit `settings.php` to reflect your needs
+  - Add the public key you generated into the repository's GitHub "SSH Keys"
+  - Configure GitHub web hook:
+    - http://www.yourwebserver/detect_conflicts.php
+    - Choose:
+      - application/x-www-form-encoded
+      - Just push the event
+  - Create directories and grant write permissions (chmod 750)
+    - `/var/www/.logs`
+    - `/var/www/.cache`
+    - `/var/www/.queue`
+  - Copy ./etc/init.d/conflict-detector to /etc/init.d and make is executable
+  - Modify paths in /etc/init.d/conflict-detector as necessary
+  - Create `settings.ini` to meet your needs
+
+## Settings.ini
+
+  - [hipchat]
+    - room_id: The HipChat API id of the room you want to post into
+    - token: The HipChat API token
+    - name: The name of the "user" posting in the room
+
+  - [git]
+    - ignore_branches: Comma separated list of branches that should not be checked for conflicts
+    - maximum_branches_to_check: The maximum number of branches to check, 0 for unlimited
+
+  - [git_to_hipchat_name]
+    - Map of GitHub user names and HipChat user names. Will @mention the HipChat user that pushed the commit. If no match is found in this map, then will mention @all.
+    - GitHubUserName: HipChatUserName
 
 ## GitHub authentication
 
   - For GitHub authentication through `git` command-line this script requires the webserver's user having an SSH key created in `.ssh`
   - An easy way to test:
-    - Temporarily change webserver's user shell from `/bin/nologin` to `/bin/bash`, if needed
-    - Login as webserver's user
+    - Switch users to webserver's user
     - Generate key pair: `ssh-keygen -t rsa`
     - `ssh git@github.com`
     - You should see: "Hi foo! You've successfully authenticated"
-    Note: Changing the webserver's user to `/bin/bash` can have certain security implications, make sure you know what you're doing
 
 ## License
 
-Copyright (c) 2010-2013 Sortex Systems Development Ltd.
+Modifications copyright (c) 2014 cielo24 Inc.
+Original code copyright (c) 2010-2013 Sortex Systems Development Ltd.
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -47,4 +71,3 @@ freely, subject to the following restrictions:
 
    3. This notice may not be removed or altered from any source
    distribution.
-
